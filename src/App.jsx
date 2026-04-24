@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from './supabaseClient';
 import { CheckCircle2, Circle, Users, ChevronLeft, ChevronRight, Calendar } from 'lucide-react';
+import QuoteCard from './Quota';
+import ArticleCard from './ArticleCard';
+import SecondArticleCard from './SecondArticle';
 
 function App() {
   const [readings, setReadings] = useState([]);
@@ -180,7 +183,9 @@ function App() {
           );
         })}
       </div>
-
+<QuoteCard date={selectedDate} />
+<ArticleCard />
+<SecondArticleCard/>
       {loading && (
         <div className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-900 text-white px-5 py-2.5 rounded-full text-[10px] font-black tracking-widest shadow-2xl flex items-center gap-2 uppercase">
           <div className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" />
