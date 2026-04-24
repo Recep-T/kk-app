@@ -23,7 +23,7 @@ const QuoteCard = ({ date }) => {
         
         <div className="flex items-center gap-2 mb-3">
           <BookOpen size={16} className="text-emerald-600" />
-          <span className="text-[10px] font-black text-emerald-700 uppercase tracking-[0.2em]">Günün İlhamı</span>
+          <span className="text-[10px] font-black text-emerald-700 uppercase tracking-[0.2em]">Günün Ayet & Hadisi</span>
         </div>
         
         <p className="text-slate-700 font-medium italic text-sm leading-relaxed relative z-10">

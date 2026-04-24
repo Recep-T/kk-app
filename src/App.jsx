@@ -106,7 +106,8 @@ function App() {
   const completedCount = readings.filter(r => r.is_completed).length;
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] pb-20 font-sans">
+    <div className="h-screen flex flex-col bg-[#F8FAFC] font-sans">
+      {/* Sticky Header */}
       <div className="bg-emerald-800 text-white pt-10 pb-16 px-6 shadow-xl rounded-b-[3rem] sticky top-0 z-10 border-b border-emerald-900/20">
         <div className="max-w-md mx-auto">
           <div className="flex justify-between items-center mb-8">
@@ -151,62 +152,63 @@ function App() {
         </div>
       </div>
 
-      <div className="max-w-md mx-auto px-5 -mt-6 space-y-2.5 relative z-20">
-        {userList.map((name, index) => {
-          const userId = index + 1;
-          const userReading = readings.find(r => r.user_id === userId);
-          const isDone = userReading?.is_completed || false;
-          const globalPage = ((currentCuz - 1) * 20) + userId;
+      {/* Scrollable Content */}
+      <div className="flex-1 overflow-y-auto">
+        <div className="max-w-md mx-auto px-5 -mt-6 space-y-2.5 relative z-20 pb-8 pt-12">
+          {userList.map((name, index) => {
+            const userId = index + 1;
+            const userReading = readings.find(r => r.user_id === userId);
+            const isDone = userReading?.is_completed || false;
+            const globalPage = ((currentCuz - 1) * 20) + userId;
 
-          return (
-            <button
-              key={userId}
-              onClick={() => toggleStatus(userId, name, isDone)}
-              className={`w-full flex items-center justify-between p-3.5 px-5 rounded-2xl border transition-all duration-300 active:scale-[0.98] ${
-                isDone 
-                ? 'bg-white border-emerald-500/40 shadow-sm shadow-emerald-50' 
-                : 'bg-white border-slate-200/60 shadow-sm hover:border-emerald-200'
-              }`}
-            >
-              <div className="flex items-center gap-4 text-left">
-                <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-xs transition-colors duration-500 ${
-                  isDone ? 'bg-emerald-600 text-white' : 'bg-slate-100 text-slate-400'
-                }`}>
-                  {userId}
+            return (
+              <button
+                key={userId}
+                onClick={() => toggleStatus(userId, name, isDone)}
+                className={`w-full flex items-center justify-between p-3.5 px-5 rounded-2xl border transition-all duration-300 active:scale-[0.98] ${
+                  isDone 
+                  ? 'bg-white border-emerald-500/40 shadow-sm shadow-emerald-50' 
+                  : 'bg-white border-slate-200/60 shadow-sm hover:border-emerald-200'
+                }`}
+              >
+                <div className="flex items-center gap-4 text-left">
+                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-xs transition-colors duration-500 ${
+                    isDone ? 'bg-emerald-600 text-white' : 'bg-slate-100 text-slate-400'
+                  }`}>
+                    {userId}
+                  </div>
+                  <div>
+                    <h3 className={`font-semibold text-sm transition-colors ${isDone ? 'text-slate-900' : 'text-slate-600'}`}>
+                      {name}
+                    </h3>
+                    <p className="text-[10px] font-bold text-emerald-600/60 uppercase tracking-tighter">
+                      SAYFA {globalPage}
+                    </p>
+                  </div>
                 </div>
-                
-                <div>
-                  <h3 className={`font-semibold text-sm transition-colors ${isDone ? 'text-slate-900' : 'text-slate-600'}`}>
-                    {name}
-                  </h3>
-                  <p className="text-[10px] font-bold text-emerald-600/60 uppercase tracking-tighter">
-                    SAYFA {globalPage}
-                  </p>
+                <div className={`transition-all duration-500 ${isDone ? 'opacity-100 scale-100' : 'opacity-20 scale-75'}`}> 
+                  {isDone ? (
+                    <CheckCircle2 className="text-emerald-500" size={22} />
+                  ) : (
+                    <Circle className="text-slate-300" size={22} />
+                  )}
                 </div>
-              </div>
-              
-              <div className={`transition-all duration-500 ${isDone ? 'opacity-100 scale-100' : 'opacity-20 scale-75'}`}>
-                {isDone ? (
-                  <CheckCircle2 className="text-emerald-500" size={22} />
-                ) : (
-                  <Circle className="text-slate-300" size={22} />
-                )}
-              </div>
-            </button>
-          );
-        })}
-      </div>
-
-      <QuoteCard date={selectedDate} />
-      <ArticleCard />
-      <SecondArticleCard/>
-
-      {loading && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-900 text-white px-5 py-2.5 rounded-full text-[10px] font-black tracking-widest shadow-2xl flex items-center gap-2 uppercase">
-          <div className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" />
-          Senkronize Ediliyor
+              </button>
+            );
+          })}
         </div>
-      )}
+
+        <QuoteCard date={selectedDate} />
+        <ArticleCard />
+        <SecondArticleCard/>
+
+        {loading && (
+          <div className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-900 text-white px-5 py-2.5 rounded-full text-[10px] font-black tracking-widest shadow-2xl flex items-center gap-2 uppercase">
+            <div className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" />
+            Senkronize Ediliyor
+          </div>
+        )}
+      </div>
     </div>
   );
 }
