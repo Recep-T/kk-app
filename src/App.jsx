@@ -41,17 +41,35 @@ function App() {
     return () => supabase.removeChannel(channel);
   }, [selectedDate]);
 
+  // Sadece bu fonksiyon optimize edildi
   const toggleStatus = async (userId, userName, currentStatus) => {
+    const newStatus = !currentStatus;
+
+    // 1. Arayüzü anında güncelle (Optimistic Update)
+    setReadings(prev => {
+      const exists = prev.find(r => r.user_id === userId);
+      if (exists) {
+        return prev.map(r => r.user_id === userId ? { ...r, is_completed: newStatus } : r);
+      } else {
+        return [...prev, { user_id: userId, user_name: userName, reading_date: selectedDate, is_completed: newStatus }];
+      }
+    });
+
+    // 2. Arka planda veritabanına gönder
     const { error } = await supabase
       .from('hatim_takip')
       .upsert({ 
         user_id: userId, 
         user_name: userName,
         reading_date: selectedDate, 
-        is_completed: !currentStatus 
+        is_completed: newStatus 
       }, { onConflict: 'user_id, reading_date' });
     
-    if (error) alert("Hata: " + error.message);
+    // 3. Eğer hata varsa durumu geri al
+    if (error) {
+      alert("Hata: " + error.message);
+      fetchReadings(selectedDate); 
+    }
   };
 
   const calculateCuz = (dateStr) => {
@@ -94,7 +112,6 @@ function App() {
             </button>
           </div>
 
-          {/* Progress Card */}
           <div className="bg-emerald-900/40 backdrop-blur-md p-5 rounded-3xl border border-white/10 shadow-inner">
             <div className="flex justify-between items-center mb-3">
               <div className="flex items-center gap-2">
@@ -117,7 +134,7 @@ function App() {
         </div>
       </div>
 
-      {/* User List - Refined Design */}
+      {/* User List */}
       <div className="max-w-md mx-auto px-5 -mt-6 space-y-2.5 relative z-20">
         {userList.map((name, index) => {
           const userId = index + 1;
@@ -136,7 +153,6 @@ function App() {
               }`}
             >
               <div className="flex items-center gap-4 text-left">
-                {/* Index Circle */}
                 <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-xs transition-colors duration-500 ${
                   isDone ? 'bg-emerald-600 text-white' : 'bg-slate-100 text-slate-400'
                 }`}>
@@ -153,7 +169,6 @@ function App() {
                 </div>
               </div>
               
-              {/* Check Icon */}
               <div className={`transition-all duration-500 ${isDone ? 'opacity-100 scale-100' : 'opacity-20 scale-75'}`}>
                 {isDone ? (
                   <CheckCircle2 className="text-emerald-500" size={22} weight="fill" />
@@ -166,7 +181,6 @@ function App() {
         })}
       </div>
 
-      {/* Subtle Loading Indicator */}
       {loading && (
         <div className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-900 text-white px-5 py-2.5 rounded-full text-[10px] font-black tracking-widest shadow-2xl flex items-center gap-2 uppercase">
           <div className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" />
