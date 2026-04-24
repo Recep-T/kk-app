@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from './supabaseClient';
-import { CheckCircle2, Circle, Users, ChevronLeft, ChevronRight, Calendar } from 'lucide-react';
+import { CheckCircle2, Circle, Users, ChevronLeft, ChevronRight } from 'lucide-react';
 import QuoteCard from './Quota';
 import ArticleCard from './ArticleCard';
 import SecondArticleCard from './SecondArticle';
@@ -8,7 +8,18 @@ import SecondArticleCard from './SecondArticle';
 function App() {
   const [readings, setReadings] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+
+  // New York saatine göre bugünü (YYYY-MM-DD) al
+  const getTodayNY = () => {
+    return new Intl.DateTimeFormat('en-CA', {
+      timeZone: 'America/New_York',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit'
+    }).format(new Date());
+  };
+
+  const [selectedDate, setSelectedDate] = useState(getTodayNY());
 
   const userList = [
     'Hakkı Y', 'Cebrail K', 'Nurettin S', 'Ugur O', 'Omer Y',
@@ -17,13 +28,13 @@ function App() {
     'Şahin S', 'Şevket T', 'Ömer A', 'Yusuf E', 'Ramazan T'
   ];
 
+  // Veritabanından sadece o güne ait kayıtları çekiyoruz
   const fetchReadings = async (date) => {
     setLoading(true);
     const { data, error } = await supabase
       .from('hatim_takip')
       .select('*')
-      .eq('reading_date', date)
-      .order('user_id', { ascending: true });
+      .eq('reading_date', date); // Sadece o günün datası!
     
     if (error) console.error('Fetch Error:', error);
     else setReadings(data || []);
@@ -44,21 +55,25 @@ function App() {
     return () => supabase.removeChannel(channel);
   }, [selectedDate]);
 
-  // Sadece bu fonksiyon optimize edildi
   const toggleStatus = async (userId, userName, currentStatus) => {
     const newStatus = !currentStatus;
 
-    // 1. Arayüzü anında güncelle (Optimistic Update)
+    // UI'ı sadece o anki selectedDate için güncelle
     setReadings(prev => {
       const exists = prev.find(r => r.user_id === userId);
       if (exists) {
         return prev.map(r => r.user_id === userId ? { ...r, is_completed: newStatus } : r);
       } else {
-        return [...prev, { user_id: userId, user_name: userName, reading_date: selectedDate, is_completed: newStatus }];
+        return [...prev, { 
+          user_id: userId, 
+          user_name: userName, 
+          reading_date: selectedDate, 
+          is_completed: newStatus 
+        }];
       }
     });
 
-    // 2. Arka planda veritabanına gönder
+    // Upsert işlemi user_id VE reading_date bazlı olduğu için eski günler silinmez
     const { error } = await supabase
       .from('hatim_takip')
       .upsert({ 
@@ -68,7 +83,6 @@ function App() {
         is_completed: newStatus 
       }, { onConflict: 'user_id, reading_date' });
     
-    // 3. Eğer hata varsa durumu geri al
     if (error) {
       alert("Hata: " + error.message);
       fetchReadings(selectedDate); 
@@ -76,14 +90,14 @@ function App() {
   };
 
   const calculateCuz = (dateStr) => {
-    const start = new Date(2026, 3, 1); 
-    const current = new Date(dateStr);
+    const start = new Date("2026-04-01T12:00:00"); 
+    const current = new Date(dateStr + "T12:00:00");
     const diffDays = Math.floor((current - start) / (1000 * 60 * 60 * 24));
     return (Math.max(0, diffDays) % 30) + 1;
   };
 
   const changeDate = (days) => {
-    const newDate = new Date(selectedDate);
+    const newDate = new Date(selectedDate + "T12:00:00");
     newDate.setDate(newDate.getDate() + days);
     setSelectedDate(newDate.toISOString().split('T')[0]);
   };
@@ -93,7 +107,6 @@ function App() {
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] pb-20 font-sans">
-      {/* Header Section */}
       <div className="bg-emerald-800 text-white pt-10 pb-16 px-6 shadow-xl rounded-b-[3rem] sticky top-0 z-10 border-b border-emerald-900/20">
         <div className="max-w-md mx-auto">
           <div className="flex justify-between items-center mb-8">
@@ -102,7 +115,7 @@ function App() {
             </button>
             <div className="text-center">
               <h2 className="text-lg font-bold tracking-tight">
-                {new Date(selectedDate).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })}
+                {new Date(selectedDate + "T12:00:00").toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })}
               </h2>
               <div className="flex items-center justify-center gap-1.5 mt-1">
                 <span className="bg-yellow-400 text-emerald-900 text-[10px] font-black px-2 py-0.5 rounded-md uppercase tracking-wider">
@@ -115,6 +128,7 @@ function App() {
             </button>
           </div>
 
+          {/* İlerleme Çubuğu Seçilen Güne Göre Güncellenir */}
           <div className="bg-emerald-900/40 backdrop-blur-md p-5 rounded-3xl border border-white/10 shadow-inner">
             <div className="flex justify-between items-center mb-3">
               <div className="flex items-center gap-2">
@@ -137,7 +151,6 @@ function App() {
         </div>
       </div>
 
-      {/* User List */}
       <div className="max-w-md mx-auto px-5 -mt-6 space-y-2.5 relative z-20">
         {userList.map((name, index) => {
           const userId = index + 1;
@@ -174,7 +187,7 @@ function App() {
               
               <div className={`transition-all duration-500 ${isDone ? 'opacity-100 scale-100' : 'opacity-20 scale-75'}`}>
                 {isDone ? (
-                  <CheckCircle2 className="text-emerald-500" size={22} weight="fill" />
+                  <CheckCircle2 className="text-emerald-500" size={22} />
                 ) : (
                   <Circle className="text-slate-300" size={22} />
                 )}
@@ -183,9 +196,11 @@ function App() {
           );
         })}
       </div>
-<QuoteCard date={selectedDate} />
-<ArticleCard />
-<SecondArticleCard/>
+
+      <QuoteCard date={selectedDate} />
+      <ArticleCard />
+      <SecondArticleCard/>
+
       {loading && (
         <div className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-900 text-white px-5 py-2.5 rounded-full text-[10px] font-black tracking-widest shadow-2xl flex items-center gap-2 uppercase">
           <div className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" />
