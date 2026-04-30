@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { supabase } from './supabaseClient';
 import { CheckCircle2, Circle, Users, ChevronLeft, ChevronRight } from 'lucide-react';
 import QuoteCard from './Quota';
@@ -107,6 +107,27 @@ function App() {
   const currentCuz = calculateCuz(selectedDate);
   const completedCount = readings.filter(r => r.is_completed).length;
 
+  // HadisBanner scroll ile kaybolsun: ilk yüklemede görünür, scroll başlayınca gizlenir
+  const [showHadisBanner, setShowHadisBanner] = useState(true);
+  const scrollRef = useRef(null);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (scrollRef.current && scrollRef.current.scrollTop > 10) {
+        setShowHadisBanner(false);
+      } else {
+        setShowHadisBanner(true);
+      }
+    };
+    const el = scrollRef.current;
+    if (el) {
+      el.addEventListener('scroll', handleScroll);
+    }
+    return () => {
+      if (el) el.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
   return (
     <div className="h-screen flex flex-col bg-[#F8FAFC] font-sans">
       {/* Sticky Header */}
@@ -131,8 +152,8 @@ function App() {
             </button>
           </div>
 
-          {/* Hadis Banner */}
-          <HadisBanner />
+          {/* Hadis Banner (scroll ile kaybolur) */}
+          {showHadisBanner && <HadisBanner />}
 
           {/* İlerleme Çubuğu Seçilen Güne Göre Güncellenir */}
           <div className="bg-emerald-900/40 backdrop-blur-md p-5 rounded-3xl border border-white/10 shadow-inner">
@@ -158,7 +179,7 @@ function App() {
       </div>
 
       {/* Scrollable Content */}
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto" ref={scrollRef}>
         <div className="max-w-md mx-auto px-5 -mt-6 space-y-2.5 relative z-20 pb-8 pt-12">
           {userList.map((name, index) => {
             const userId = index + 1;
