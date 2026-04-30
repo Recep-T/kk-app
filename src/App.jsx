@@ -4,6 +4,8 @@ import { CheckCircle2, Circle, Users, ChevronLeft, ChevronRight } from 'lucide-r
 import QuoteCard from './Quota';
 import ArticleCard from './ArticleCard';
 import SecondArticleCard from './SecondArticle';
+import HikmetArticle from './HikmetArticle';
+import HadisBanner from './HadisBanner';
 
 function App() {
   const [readings, setReadings] = useState([]);
@@ -108,7 +110,7 @@ function App() {
   return (
     <div className="h-screen flex flex-col bg-[#F8FAFC] font-sans">
       {/* Sticky Header */}
-      <div className="bg-emerald-800 text-white pt-10 pb-16 px-6 shadow-xl rounded-b-[3rem] sticky top-0 z-10 border-b border-emerald-900/20">
+      <div className="bg-emerald-800 text-white pt-10 pb-6 px-6 shadow-xl rounded-b-[3rem] sticky top-0 z-10 border-b border-emerald-900/20">
         <div className="max-w-md mx-auto">
           <div className="flex justify-between items-center mb-8">
             <button onClick={() => changeDate(-1)} className="p-2.5 bg-white/10 hover:bg-white/20 rounded-xl transition-all active:scale-90">
@@ -128,6 +130,9 @@ function App() {
               <ChevronRight size={22} />
             </button>
           </div>
+
+          {/* Hadis Banner */}
+          <HadisBanner />
 
           {/* İlerleme Çubuğu Seçilen Güne Göre Güncellenir */}
           <div className="bg-emerald-900/40 backdrop-blur-md p-5 rounded-3xl border border-white/10 shadow-inner">
@@ -200,7 +205,8 @@ function App() {
 
         <QuoteCard date={selectedDate} />
         <ArticleCard />
-        <SecondArticleCard/>
+        <SecondArticleCard />
+        <HikmetArticle />
 
         {loading && (
           <div className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-900 text-white px-5 py-2.5 rounded-full text-[10px] font-black tracking-widest shadow-2xl flex items-center gap-2 uppercase">
