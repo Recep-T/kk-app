@@ -1,0 +1,30 @@
+-- 1. ESKİ TABLOYU SİL (Hafızayı temizle)
+drop table if exists hatim_takip;
+
+-- 2. YENİ TABLOYU OLUŞTUR (React kodunla %100 uyumlu)
+create table hatim_takip (
+  id uuid default gen_random_uuid() primary key,
+  user_id int not null,           
+  user_name text not null,        
+  reading_date date not null default current_date, 
+  is_completed boolean default false,
+  updated_at timestamp with time zone default now(),
+  
+  -- Aynı kişinin aynı güne 2 kez eklenmesini engeller (Upsert için şart)
+  unique(user_id, reading_date) 
+);
+
+-- 3. BUGÜN İÇİN VERİLERİ EKLE (Hata almamak için başlangıç verisi)
+-- Tarihi bugüne (24 Nisan) göre ayarladım
+insert into hatim_takip (user_id, user_name, reading_date) values
+(1, 'Hakkı Y', '2026-04-24'), (2, 'Cebrail K', '2026-04-24'), (3, 'Nurettin S', '2026-04-24'),
+(4, 'Ugur O', '2026-04-24'), (5, 'Omer Y', '2026-04-24'), (6, 'Hasan G', '2026-04-24'),
+(7, 'Bilal Y', '2026-04-24'), (8, 'Hamza K', '2026-04-24'), (9, 'Numan S', '2026-04-24'),
+(10, 'Erkan K', '2026-04-24'), (11, 'Yusuf A', '2026-04-24'), (12, 'Bilal A', '2026-04-24'),
+(13, 'Recep T', '2026-04-24'), (14, 'Ayhan B', '2026-04-24'), (15, 'Kerim K', '2026-04-24'),
+(16, 'Şahin S', '2026-04-24'), (17, 'Şevket T', '2026-04-24'), (18, 'Ömer A', '2026-04-24'),
+(19, 'Yusuf E', '2026-04-24'), (20, 'Ramazan T', '2026-04-24');
+
+-- 4. GÜVENLİK AYARLARI (RLS)
+alter table hatim_takip enable row level security;
+create policy "Herkes her şeyi yapabilir" on hatim_takip for all using (true) with check (true);

@@ -168,6 +168,11 @@ function App() {
             </button>
           </div>
 
+          {/* Uyarı Notu */}
+          <div className="bg-red-100 text-red-800 text-xs font-semibold rounded-lg px-4 py-2 mb-4 border border-red-200 shadow-sm text-center">
+            Her ayın son gecesi bütün o ayki  veriler siliniyor. Dolayısıyla herkes eksik olan sayfaları not ederse iyi olur.
+          </div>
+
           {/* Hadis Banner (scroll ile kaybolur) */}
           {showHadisBanner && <HadisBanner />}
 
