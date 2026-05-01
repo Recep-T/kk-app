@@ -24,11 +24,27 @@ function App() {
   const [selectedDate, setSelectedDate] = useState(getTodayNY());
 
   const userList = [
-    'Hakkı Y', 'Cebrail K', 'Nurettin S', 'Ugur O', 'Omer Y',
-    'Hasan G', 'Bilal Y', 'Hamza K', 'Numan S', 'Erkan K',
-    'Yusuf A', 'Bilal A', 'Recep T', 'Ayhan B', 'Kerim K',
-    'Şahin S', 'Şevket T', 'Ömer A', 'Yusuf E', 'Ramazan T'
-  ];
+  'Ramazan T', // 1
+  'Hakkı Y',   // 2
+  'Cebrail K', // 3
+  'Nurettin Ş',// 4
+  'Ugur O',    // 5
+  'Omer Y',    // 6
+  'Hasan G',   // 7
+  'Bilal Y',   // 8
+  'Hamza K',   // 9
+  'Numan S',   // 10
+  'Erkan K',   // 11
+  'Yusuf A',   // 12
+  'Bilal H',   // 13
+  'Recep T',   // 14
+  'Ayhan B',   // 15
+  'Kerim K',   // 16
+  'Şahin Ş',   // 17
+  'Şevket T',  // 18
+  'Ömer A',    // 19
+  'Yusuf E'    // 20
+];
 
   // Veritabanından sadece o güne ait kayıtları çekiyoruz
   const fetchReadings = async (date) => {
