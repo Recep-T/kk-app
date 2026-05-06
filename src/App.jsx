@@ -123,38 +123,19 @@ function App() {
   const currentCuz = calculateCuz(selectedDate);
   const completedCount = readings.filter(r => r.is_completed).length;
 
-  // HadisBanner scroll ile kaybolsun: ilk yüklemede görünür, scroll başlayınca gizlenir
-  const [showHadisBanner, setShowHadisBanner] = useState(true);
   const scrollRef = useRef(null);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      if (scrollRef.current && scrollRef.current.scrollTop > 10) {
-        setShowHadisBanner(false);
-      } else {
-        setShowHadisBanner(true);
-      }
-    };
-    const el = scrollRef.current;
-    if (el) {
-      el.addEventListener('scroll', handleScroll);
-    }
-    return () => {
-      if (el) el.removeEventListener('scroll', handleScroll);
-    };
-  }, []);
 
   return (
     <div className="h-screen flex flex-col bg-[#F8FAFC] font-sans">
       {/* Sticky Header */}
-      <div className="bg-emerald-800 text-white pt-10 pb-6 px-6 shadow-xl rounded-b-[3rem] sticky top-0 z-10 border-b border-emerald-900/20">
+      <div className="bg-emerald-800 text-white pt-4 pb-3 px-4 shadow-xl rounded-b-[1.5rem] sticky top-0 z-10 border-b border-emerald-900/20">
         <div className="max-w-md mx-auto">
-          <div className="flex justify-between items-center mb-8">
+          <div className="flex justify-between items-center mb-3">
             <button onClick={() => changeDate(-1)} className="p-2.5 bg-white/10 hover:bg-white/20 rounded-xl transition-all active:scale-90">
               <ChevronLeft size={22} />
             </button>
             <div className="text-center">
-              <h2 className="text-lg font-bold tracking-tight">
+              <h2 className="text-base font-bold tracking-tight">
                 {new Date(selectedDate + "T12:00:00").toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })}
               </h2>
               <div className="flex items-center justify-center gap-1.5 mt-1">
@@ -169,15 +150,12 @@ function App() {
           </div>
 
           {/* Uyarı Notu */}
-          <div className="bg-red-100 text-red-800 text-xs font-semibold rounded-lg px-4 py-2 mb-4 border border-red-200 shadow-sm text-center">
+          <div className="bg-red-100 text-red-800 text-xs font-semibold rounded-lg px-3 py-1 mb-2 border border-red-200 shadow-sm text-center">
             Her ayın son gecesi bütün o ayki  veriler siliniyor. Dolayısıyla herkes eksik olan sayfaları not ederse iyi olur.
           </div>
 
-          {/* Hadis Banner (scroll ile kaybolur) */}
-          {showHadisBanner && <HadisBanner />}
-
           {/* İlerleme Çubuğu Seçilen Güne Göre Güncellenir */}
-          <div className="bg-emerald-900/40 backdrop-blur-md p-5 rounded-3xl border border-white/10 shadow-inner">
+          <div className="bg-emerald-900/40 backdrop-blur-md p-3 rounded-2xl border border-white/10 shadow-inner">
             <div className="flex justify-between items-center mb-3">
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 bg-emerald-700 rounded-lg flex items-center justify-center">
@@ -201,7 +179,7 @@ function App() {
 
       {/* Scrollable Content */}
       <div className="flex-1 overflow-y-auto" ref={scrollRef}>
-        <div className="max-w-md mx-auto px-5 -mt-6 space-y-2.5 relative z-20 pb-8 pt-12">
+        <div className="max-w-md mx-auto px-5 space-y-2.5 relative z-20 pb-4 pt-4">
           {userList.map((name, index) => {
             const userId = index + 1;
             const userReading = readings.find(r => r.user_id === userId);
@@ -245,6 +223,7 @@ function App() {
           })}
         </div>
 
+        <HadisBanner />
         <QuoteCard date={selectedDate} />
         <ArticleCard />
         <SecondArticleCard />
