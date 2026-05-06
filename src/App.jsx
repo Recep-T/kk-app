@@ -124,6 +124,16 @@ function App() {
   const completedCount = readings.filter(r => r.is_completed).length;
 
   const scrollRef = useRef(null);
+  const [showUyari, setShowUyari] = useState(() => {
+    const kapatildi = localStorage.getItem('uyariKapatildiTarih');
+    const bugun = new Date().toDateString();
+    return kapatildi !== bugun;
+  });
+
+  const closeUyari = () => {
+    localStorage.setItem('uyariKapatildiTarih', new Date().toDateString());
+    setShowUyari(false);
+  };
 
   return (
     <div className="h-screen flex flex-col bg-[#F8FAFC] font-sans">
@@ -150,9 +160,12 @@ function App() {
           </div>
 
           {/* Uyarı Notu */}
-          <div className="bg-red-100 text-red-800 text-xs font-semibold rounded-lg px-3 py-1 mb-2 border border-red-200 shadow-sm text-center">
-            Her ayın son gecesi bütün o ayki  veriler siliniyor. Dolayısıyla herkes eksik olan sayfaları not ederse iyi olur.
-          </div>
+          {showUyari && (
+            <div className="bg-red-100 text-red-800 text-xs font-semibold rounded-lg px-3 py-1 mb-2 border border-red-200 shadow-sm flex items-start gap-2">
+              <span className="flex-1 text-center">Her ayın son gecesi bütün o ayki veriler siliniyor. Dolayısıyla herkes eksik olan sayfaları not ederse iyi olur.</span>
+              <button onClick={closeUyari} className="shrink-0 text-red-400 hover:text-red-600 text-base leading-none mt-0.5">✕</button>
+            </div>
+          )}
 
           {/* İlerleme Çubuğu Seçilen Güne Göre Güncellenir */}
           <div className="bg-emerald-900/40 backdrop-blur-md p-3 rounded-2xl border border-white/10 shadow-inner">
@@ -164,7 +177,8 @@ function App() {
                 <span className="text-sm font-semibold text-emerald-100">Grup İlerlemesi</span>
               </div>
               <span className="text-sm font-bold text-white">
-                {completedCount} <span className="opacity-50 text-xs">/ 20</span>
+                {completedCount}<span className="opacity-50 text-xs"> / 20</span>
+                <span className="ml-2 text-xs font-black text-emerald-300">%{Math.round((completedCount / 20) * 100)}</span>
               </span>
             </div>
             <div className="w-full bg-emerald-950/40 rounded-full h-2 overflow-hidden">
