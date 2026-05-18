@@ -220,9 +220,15 @@ function App() {
                     <h3 className={`font-semibold text-sm transition-colors ${isDone ? 'text-slate-900' : 'text-slate-600'}`}>
                       {name}
                     </h3>
-                    <p className="text-[10px] font-bold text-emerald-600/60 uppercase tracking-tighter">
-                      SAYFA {globalPage}
-                    </p>
+                    <a
+                      href={`https://kuran.hayrat.com.tr/kuran-oku/?sayfa=${globalPage}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={e => e.stopPropagation()}
+                      className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-tighter px-2 py-0.5 rounded-md border border-blue-400/40 text-blue-600 bg-blue-50 hover:bg-blue-100 hover:border-blue-500/60 hover:text-blue-700 active:scale-95 transition-all"
+                    >
+                      SAYFA {globalPage} ↗
+                    </a>
                   </div>
                 </div>
                 <div className={`transition-all duration-500 ${isDone ? 'opacity-100 scale-100' : 'opacity-20 scale-75'}`}> 
