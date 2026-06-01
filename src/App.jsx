@@ -108,10 +108,20 @@ function App() {
   };
 
   const calculateCuz = (dateStr) => {
-    const start = new Date("2026-04-01T12:00:00"); 
+    const start = new Date("2026-04-01T12:00:00");
     const current = new Date(dateStr + "T12:00:00");
     const diffDays = Math.floor((current - start) / (1000 * 60 * 60 * 24));
     return (Math.max(0, diffDays) % 30) + 1;
+  };
+
+  const calculateOffset = (dateStr) => {
+    const current = new Date(dateStr + "T12:00:00");
+    const nextDay = new Date(current);
+    nextDay.setDate(nextDay.getDate() + 1);
+    const isLastDay = nextDay.getDate() === 1;
+    const ref = isLastDay ? nextDay : current;
+    const totalMonths = (ref.getFullYear() - 2026) * 12 + (ref.getMonth() + 1 - 4);
+    return (1 - Math.max(0, totalMonths) + 400) % 20;
   };
 
   const changeDate = (days) => {
@@ -121,6 +131,7 @@ function App() {
   };
 
   const currentCuz = calculateCuz(selectedDate);
+  const currentOffset = calculateOffset(selectedDate);
   const completedCount = readings.filter(r => r.is_completed).length;
 
   const scrollRef = useRef(null);
@@ -194,11 +205,13 @@ function App() {
       {/* Scrollable Content */}
       <div className="flex-1 overflow-y-auto" ref={scrollRef}>
         <div className="max-w-md mx-auto px-5 space-y-2.5 relative z-20 pb-4 pt-4">
-          {userList.map((name, index) => {
-            const userId = index + 1;
+          {Array.from({ length: 20 }, (_, slot) => {
+            const userIndex = (currentOffset + slot) % 20;
+            const name = userList[userIndex];
+            const userId = userIndex + 1;
             const userReading = readings.find(r => r.user_id === userId);
             const isDone = userReading?.is_completed || false;
-            const globalPage = ((currentCuz - 1) * 20) + userId;
+            const globalPage = ((currentCuz - 1) * 20) + slot + 1;
 
             return (
               <button
@@ -214,7 +227,7 @@ function App() {
                   <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-xs transition-colors duration-500 ${
                     isDone ? 'bg-emerald-600 text-white' : 'bg-slate-100 text-slate-400'
                   }`}>
-                    {userId}
+                    {slot + 1}
                   </div>
                   <div>
                     <h3 className={`font-semibold text-sm transition-colors ${isDone ? 'text-slate-900' : 'text-slate-600'}`}>
