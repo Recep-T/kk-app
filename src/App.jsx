@@ -280,7 +280,7 @@ function App() {
             <button
               onClick={() => setActiveTab('rapor')}
               className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all ${
-                activeTab === 'rapor' ? 'bg-white text-emerald-800' : 'bg-white/10 text-white/70 hover:bg-white/20'
+                activeTab === 'rapor' ? 'bg-red-500 text-white' : 'bg-red-500/50 text-white hover:bg-red-500/70'
               }`}
             >
               <AlertCircle size={13} />
